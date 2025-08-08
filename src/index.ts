@@ -33,8 +33,8 @@ const responseCreate = {
   },
 } as const;
 
-type RealtimeSessionStarted = {
-  type: "realtime.session.started";
+type RealtimeIncomingCall = {
+  type: "realtime.incoming.call";
   data: { wss_url: string };
 };
 
@@ -67,6 +67,10 @@ function startWebsocketClient(wsUrl: string) {
   );
 }
 
+app.get("/health", async (req: Request, res: Response ) => {
+  return res.status(200).send("health ok");
+});
+
 app.post("/", async (req: Request, res: Response) => {
   try {
     // The OpenAI SDK expects the raw body and request headers
@@ -76,8 +80,8 @@ app.post("/", async (req: Request, res: Response) => {
       WEBHOOK_SECRET
     );
 
-    if ((event as unknown as RealtimeSessionStarted).type === "realtime.session.started") {
-      const { wss_url } = (event as unknown as RealtimeSessionStarted).data;
+    if ((event as unknown as RealtimeIncomingCall).type === "realtime.incoming.call") {
+      const { wss_url } = (event as unknown as RealtimeIncomingCall).data;
       startWebsocketClient(wss_url);
 
       // Return session.create and include Authorization header
