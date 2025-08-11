@@ -18,12 +18,10 @@ app.use(bodyParser.raw({ type: "*/*" }));
 
 const client = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-const sessionCreate = {
-  type: "session.create",
-  session: {
+const callAccept = {
     instructions: "You are a support agent.",
     model: "gpt-4o-realtime-preview-2025-06-03",
-  },
+    voice: "alloy",
 } as const;
 
 const responseCreate = {
@@ -33,27 +31,30 @@ const responseCreate = {
   },
 } as const;
 
-type RealtimeIncomingCall = {
-  type: "realtime.incoming.call";
-  data: { wss_url: string };
-};
+const RealtimeIncomingCall = "realtime.incoming.call" as const;
 
-async function websocketTask(uri: string): Promise<void> {
+const websocketTask = async (uri: string): Promise<void> => {
+
   const ws = new WebSocket(uri, {
-    headers: { Authorization: `Bearer ${OPENAI_API_KEY}` },
+    headers: {
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      "OpenAI-Beta": "realtime=v1",
+      origin: "https://api.openai.com",
+    },
   });
 
   ws.on("open", () => {
+    console.log(`WS OPEN ${uri}`);
     ws.send(JSON.stringify(responseCreate));
   });
 
   ws.on("message", (data) => {
     const text = typeof data === "string" ? data : data.toString("utf8");
-    console.log("Received from WebSocket:", text);
+    // console.log("Received from WebSocket:", text);
   });
 
-  ws.on("error", (err) => {
-    console.error("WebSocket error:", err);
+  ws.on("error", (e) => {
+    console.error("WebSocket error:", JSON.stringify(e));
   });
 
   ws.on("close", (code, reason) => {
@@ -61,45 +62,77 @@ async function websocketTask(uri: string): Promise<void> {
   });
 }
 
-function startWebsocketClient(wsUrl: string) {
-  websocketTask(wsUrl).catch((e) =>
-    console.error("WebSocket task failed:", e)
-  );
+const connectWithRetry = async (sipWssUrl: string, attempt = 1): Promise<void> => {
+
+  try {
+    console.log("Dialing Realtime WS:", sipWssUrl, "(attempt", attempt, ")");
+    await websocketTask(sipWssUrl);
+  } catch (e) {
+    console.error("WS connect exception:", e);
+  }
+
+  // If the server rejected the upgrade (404/1006), try a short backoff once.
+  if (attempt < 3) {
+    const backoffMs = Math.min(500 * attempt, 1000);
+    setTimeout(() => connectWithRetry(sipWssUrl, attempt + 1), backoffMs);
+  }
+  
 }
 
 app.get("/health", async (req: Request, res: Response ) => {
-  return res.status(200).send("health ok");
+  return res.status(200).send(`Health ok`);
 });
 
 app.post("/", async (req: Request, res: Response) => {
+
   try {
-    // The OpenAI SDK expects the raw body and request headers
     const event = await client.webhooks.unwrap(
-      req.body.toString("utf8"), 
+      req.body.toString("utf8"),
       req.headers as Record<string, string>,
       WEBHOOK_SECRET
     );
 
-    if ((event as unknown as RealtimeIncomingCall).type === "realtime.incoming.call") {
-      const { wss_url } = (event as unknown as RealtimeIncomingCall).data;
-      startWebsocketClient(wss_url);
+    const type = (event as any)?.type;
 
-      // Return session.create and include Authorization header
+    if (type === RealtimeIncomingCall) {
+      const callId: string = (event as any)?.data?.call_id;
+
+      // Accept the Call 
+      const resp = await fetch(
+        `https://api.openai.com/v1/realtime/calls/${encodeURIComponent(callId)}/accept`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+            "OpenAI-Beta": "realtime=v1",
+          },
+          body: JSON.stringify(callAccept),
+        }
+      );
+
+      if (!resp.ok) {
+        const text = await resp.text().catch(() => "");
+        console.error("ACCEPT failed:", resp.status, resp.statusText, text);
+        return res.status(500).send("Accept failed");
+      }
+
+      // Connect the web socket after a short delay
+      const wssUrl: string | undefined = (event as any)?.data?.wss_url;
+      if (wssUrl) setTimeout(() => connectWithRetry(wssUrl), 120);
+
+      // Acknowledge the webhook
       res.set("Authorization", `Bearer ${OPENAI_API_KEY}`);
-      return res.status(200).json(sessionCreate);
+      return res.sendStatus(200);
     }
 
     return res.sendStatus(200);
-  } catch (err: any) {
-    const msg = String(err?.message ?? "");
-    if (
-      err?.name === "InvalidWebhookSignatureError" ||
-      msg.toLowerCase().includes("invalid signature")
-    ) {
-      console.error("Invalid signature", err);
+
+  } catch (e: any) {
+    const msg = String(e?.message ?? "");
+    if (e?.name === "InvalidWebhookSignatureError" || msg.toLowerCase().includes("invalid signature")) {
       return res.status(400).send("Invalid signature");
     }
-    console.error("Webhook handler error:", err);
     return res.status(500).send("Server error");
   }
 });
