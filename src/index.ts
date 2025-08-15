@@ -31,7 +31,7 @@ const responseCreate = {
   },
 } as const;
 
-const RealtimeIncomingCall = "realtime.incoming.call" as const;
+const RealtimeIncomingCall = "realtime.call.incoming" as const;
 
 const websocketTask = async (uri: string): Promise<void> => {
 
