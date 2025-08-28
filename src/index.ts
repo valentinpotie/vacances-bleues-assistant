@@ -20,9 +20,8 @@ const client = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 const callAccept = {
     instructions: "You are a support agent. Speak in English unless the user requests a different language.",
-    model: "gpt-4o-realtime-preview-2025-06-03",
+    model: "gpt-realtime",
     voice: "alloy",
-    type: "realtime",
 } as const;
 
 const WELCOME_GREETING = "Thank you for calling, how can I help you?";
