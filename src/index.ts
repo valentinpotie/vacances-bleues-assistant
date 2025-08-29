@@ -20,8 +20,11 @@ const client = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 const callAccept = {
     instructions: "You are a support agent. Speak in English unless the user requests a different language.",
+    type: "realtime",
     model: "gpt-realtime",
-    voice: "alloy",
+    audio: {
+      output: { voice: "alloy" },
+    }
 } as const;
 
 const WELCOME_GREETING = "Thank you for calling, how can I help you?";
@@ -40,7 +43,6 @@ const websocketTask = async (uri: string): Promise<void> => {
   const ws = new WebSocket(uri, {
     headers: {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      "OpenAI-Beta": "realtime=v1",
       origin: "https://api.openai.com",
     },
   });
@@ -100,7 +102,6 @@ app.post("/", async (req: Request, res: Response) => {
           headers: {
             Authorization: `Bearer ${OPENAI_API_KEY}`,
             "Content-Type": "application/json",
-            "OpenAI-Beta": "realtime=v1", 
           },
           body: JSON.stringify(callAccept),
         }
