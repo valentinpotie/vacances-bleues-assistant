@@ -5,296 +5,795 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Vacances Bleues - Assistant Vocal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        border: "hsl(214.3 31.8% 91.4%)",
-                        input: "hsl(214.3 31.8% 91.4%)",
-                        ring: "hsl(221.2 83.2% 53.3%)",
-                        background: "hsl(0 0% 100%)",
-                        foreground: "hsl(222.2 84% 4.9%)",
-                        primary: {
-                            DEFAULT: "hsl(221.2 83.2% 53.3%)",
-                            foreground: "hsl(210 40% 98%)",
-                        },
-                        secondary: {
-                            DEFAULT: "hsl(210 40% 96.1%)",
-                            foreground: "hsl(222.2 47.4% 11.2%)",
-                        },
-                        destructive: {
-                            DEFAULT: "hsl(0 84.2% 60.2%)",
-                            foreground: "hsl(210 40% 98%)",
-                        },
-                        muted: {
-                            DEFAULT: "hsl(210 40% 96.1%)",
-                            foreground: "hsl(215.4 16.3% 46.9%)",
-                        },
-                        accent: {
-                            DEFAULT: "hsl(210 40% 96.1%)",
-                            foreground: "hsl(222.2 47.4% 11.2%)",
-                        },
-                        card: {
-                            DEFAULT: "hsl(0 0% 100%)",
-                            foreground: "hsl(222.2 84% 4.9%)",
-                        },
-                        success: {
-                            DEFAULT: "hsl(142.1 76.2% 36.3%)",
-                            foreground: "hsl(355.7 100% 97.3%)",
-                        },
-                    },
-                    borderRadius: {
-                        lg: "0.5rem",
-                        md: "calc(0.5rem - 2px)",
-                        sm: "calc(0.5rem - 4px)",
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'slide-in': 'slideIn 0.3s ease-out',
-                        'fade-in': 'fadeIn 0.2s ease-out',
-                    },
-                    keyframes: {
-                        slideIn: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                    },
-                }
-            }
-        }
-    </script>
     <style>
-        /* Custom styles for specific elements */
-        .shadow-card {
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .shadow-card-hover {
-            transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
         }
 
-        .shadow-card-hover:hover {
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            transform: translateY(-2px);
-        }
-
-        /* Custom scrollbar for transcript and logs */
+        /* Custom scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
+            height: 6px;
         }
 
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: hsl(210 40% 96.1%);
-            border-radius: 4px;
+            background: #f1f5f9;
+            border-radius: 3px;
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: hsl(215.4 16.3% 46.9%);
-            border-radius: 4px;
+            background: #94a3b8;
+            border-radius: 3px;
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: hsl(215.4 16.3% 36.9%);
+            background: #64748b;
         }
 
-        /* Gradient animation for volume bar */
-        .volume-gradient {
-            background: linear-gradient(90deg,
-                hsl(142.1 76.2% 36.3%) 0%,
-                hsl(45 93% 47%) 50%,
-                hsl(0 84.2% 60.2%) 100%);
+        /* Timeline styles */
+        .timeline {
+            position: relative;
+            padding-left: 40px;
         }
 
-        /* Logo animation */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 16px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
         }
 
-        .logo-float {
-            animation: float 3s ease-in-out infinite;
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+            animation: slideInMessage 0.4s ease-out;
+        }
+
+        @keyframes slideInMessage {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -28px;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px currentColor;
+        }
+
+        .timeline-item.user .timeline-dot {
+            color: #3b82f6;
+        }
+
+        .timeline-item.assistant .timeline-dot {
+            color: #2563eb;
+        }
+
+        .timeline-item.system .timeline-dot {
+            color: #9ca3af;
+        }
+
+        /* Message cards */
+        .message-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.2s;
+        }
+
+        .message-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-item.user .message-card {
+            background: #eff6ff;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .timeline-item.assistant .message-card {
+            background: white;
+            border-left: 3px solid #2563eb;
+        }
+
+        .timeline-item.system .message-card {
+            background: #f9fafb;
+            border-left: 3px solid #9ca3af;
+        }
+
+        /* Avatar */
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .timeline-item.user .avatar {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .timeline-item.assistant .avatar {
+            background: #2563eb;
+            color: white;
+        }
+
+        .timeline-item.system .avatar {
+            background: #9ca3af;
+            color: white;
+        }
+
+        /* Status indicator animation */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .status-indicator.connected {
+            background: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+        }
+
+        .status-indicator.connecting {
+            background: #f59e0b;
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+        }
+
+        .status-indicator.disconnected {
+            background: #ef4444;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+        }
+
+        /* Volume bar */
+        .volume-bar-container {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .volume-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #3b82f6 50%, #6366f1 100%);
+            transition: width 0.1s ease-out;
+            border-radius: 3px;
+        }
+
+        /* Log terminal */
+        .log-terminal {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+        }
+
+        .log-entry.info {
+            color: #60a5fa;
+        }
+
+        .log-entry.success {
+            color: #34d399;
+        }
+
+        .log-entry.error {
+            color: #f87171;
+        }
+
+        .log-entry.warning {
+            color: #fbbf24;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-start {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-start:hover:not(:disabled) {
+            background: #059669;
+        }
+
+        .btn-stop {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-stop:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3a8a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Grid layout */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .grid-2-cols {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-2-cols {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Config item */
+        .config-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .config-item svg {
+            flex-shrink: 0;
+            color: #64748b;
+        }
+
+        .config-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+
+        .config-value {
+            font-size: 12px;
+            color: #64748b;
+            font-family: 'Consolas', monospace;
+            word-break: break-all;
+        }
+
+        /* Reservation info */
+        .res-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .res-field {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .res-field-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .res-field-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .res-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .res-confirmation {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: #dcfce7;
+            border: 2px solid #22c55e;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 32px 0;
+            margin-bottom: 24px;
+        }
+
+        .header-logo {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .status-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* Section headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+
+        /* Timestamp */
+        .timestamp {
+            font-size: 11px;
+            color: #94a3af;
+            margin-top: 8px;
+        }
+
+        /* Warning box */
+        .warning-box {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .warning-box svg {
+            flex-shrink: 0;
+            color: #d97706;
+        }
+
+        .warning-content {
+            font-size: 12px;
+            color: #92400e;
+        }
+
+        .warning-title {
+            font-weight: 600;
+            margin-bottom: 4px;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
-
+<body>
+    <div class="container">
         <!-- Header -->
-        <header class="text-center mb-8 animate-fade-in">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-4 logo-float shadow-lg">
-                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+        <div class="header">
+            <div class="header-logo">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
                 </svg>
             </div>
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">Vacances Bleues</h1>
-            <p class="text-lg text-gray-600">Test de l'assistant vocal de réservation</p>
-        </header>
+            <h1 class="header-title">Vacances Bleues - Assistant Vocal</h1>
+            <p class="header-subtitle">Interface de test pour l'assistant de réservation</p>
+        </div>
 
         <!-- Status Card -->
-        <div class="bg-white rounded-lg shadow-card p-6 mb-6 animate-fade-in border border-gray-200">
-            <div id="status" class="flex items-center justify-center gap-3">
-                <span id="statusIndicator" class="relative flex h-4 w-4">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-4 w-4 bg-red-500"></span>
-                </span>
-                <span id="statusText" class="text-lg font-semibold text-gray-700">Déconnecté</span>
-            </div>
+        <div class="status-card" id="status">
+            <span class="status-indicator disconnected" id="statusIndicator"></span>
+            <span class="status-text" id="statusText">Déconnecté</span>
         </div>
 
         <!-- Main Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-            <!-- Left Column -->
-            <div class="space-y-6">
-
-                <!-- Controls Card -->
-                <div class="bg-white rounded-lg shadow-card p-6 border border-gray-200 animate-fade-in">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-                        </svg>
-                        Contrôles
-                    </h2>
-                    <div class="space-y-3">
-                        <button id="startBtn" class="w-full inline-flex items-center justify-center gap-2 rounded-lg text-base font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 h-12 px-6 py-3 shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:-translate-y-0.5 active:translate-y-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+        <div class="grid-2-cols">
+            <!-- LEFT COLUMN: Technical -->
+            <div>
+                <!-- Controls -->
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M12 1v6m0 6v6m6-12v6m0 6v6m6-12v6m0 6v6M6 1v6m0 6v6M0 7v6m0 6v6"></path>
+                            </svg>
+                            Contrôles
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <button id="startBtn" class="btn btn-start" style="width: 100%; margin-bottom: 12px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="23"></line>
+                                <line x1="8" y1="23" x2="16" y2="23"></line>
                             </svg>
                             Démarrer l'appel test
                         </button>
-                        <button id="stopBtn" disabled class="w-full inline-flex items-center justify-center gap-2 rounded-lg text-base font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 h-12 px-6 py-3 shadow-lg shadow-red-500/30 hover:shadow-xl hover:shadow-red-500/40 hover:-translate-y-0.5 active:translate-y-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
+                        <button id="stopBtn" class="btn btn-stop" style="width: 100%;" disabled>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <rect x="9" y="9" width="6" height="6"></rect>
                             </svg>
                             Terminer l'appel
                         </button>
-                    </div>
 
-                    <!-- Volume Meter -->
-                    <div class="mt-6">
-                        <div class="flex items-center justify-between mb-2">
-                            <label class="text-sm font-medium text-gray-700">Niveau du microphone</label>
-                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 0m-2.828-9.9a9 9 0 0112.728 0"></path>
-                            </svg>
-                        </div>
-                        <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
-                            <div id="volumeBar" class="h-full volume-gradient transition-all duration-100 ease-out" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Configuration Card -->
-                <div class="bg-white rounded-lg shadow-card p-6 border border-gray-200 animate-fade-in">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                        Configuration
-                    </h2>
-                    <div class="space-y-3">
-                        <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                            <svg class="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
-                            </svg>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-700 mb-1">Clé API</p>
-                                <code id="apiKeyStatus" class="text-xs text-gray-600 bg-white px-2 py-1 rounded border border-gray-200 break-all">Non configurée</code>
+                        <!-- Volume Meter -->
+                        <div style="margin-top: 24px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-size: 13px; font-weight: 600; color: #475569;">Niveau du microphone</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2">
+                                    <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                                    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+                                </svg>
                             </div>
-                        </div>
-                        <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                            <svg class="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
-                            </svg>
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-700 mb-1">Serveur</p>
-                                <code class="text-xs text-gray-600 bg-white px-2 py-1 rounded border border-gray-200">WebSocket direct OpenAI</code>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                            <svg class="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                            </svg>
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-700 mb-1">Micro</p>
-                                <code id="micStatus" class="text-xs text-gray-600 bg-white px-2 py-1 rounded border border-gray-200">En attente</code>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                            <svg class="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 0m-2.828-9.9a9 9 0 0112.728 0"></path>
-                            </svg>
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-700 mb-1">Audio</p>
-                                <code id="audioStatus" class="text-xs text-gray-600 bg-white px-2 py-1 rounded border border-gray-200">En attente</code>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                        <div class="flex gap-2">
-                            <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                            </svg>
-                            <div class="text-xs text-amber-800">
-                                <p class="font-semibold mb-1">Important</p>
-                                <p>Cette page nécessite une connexion internet stable et une clé API OpenAI valide avec accès à l'API Realtime.</p>
+                            <div class="volume-bar-container">
+                                <div id="volumeBar" class="volume-bar" style="width: 0%"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Configuration -->
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M12 1v6m0 6v6"></path>
+                                <path d="m4.93 4.93 4.24 4.24m5.66 5.66 4.24 4.24"></path>
+                                <path d="M1 12h6m6 0h6"></path>
+                                <path d="m4.93 19.07 4.24-4.24m5.66-5.66 4.24-4.24"></path>
+                            </svg>
+                            Configuration
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="config-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+                            </svg>
+                            <div style="flex: 1; min-width: 0;">
+                                <div class="config-label">Clé API OpenAI</div>
+                                <div class="config-value" id="apiKeyStatus">Non configurée</div>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
+                            <div style="flex: 1;">
+                                <div class="config-label">Serveur</div>
+                                <div class="config-value">WebSocket direct OpenAI</div>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            </svg>
+                            <div style="flex: 1;">
+                                <div class="config-label">Microphone</div>
+                                <div class="config-value" id="micStatus">En attente</div>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                            <div style="flex: 1;">
+                                <div class="config-label">Audio</div>
+                                <div class="config-value" id="audioStatus">En attente</div>
+                            </div>
+                        </div>
+
+                        <div class="warning-box">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            <div class="warning-content">
+                                <div class="warning-title">Important</div>
+                                <div>Nécessite une connexion internet stable et une clé API OpenAI valide avec accès à l'API Realtime.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logs Techniques -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="4 17 10 11 4 5"></polyline>
+                                <line x1="12" y1="19" x2="20" y2="19"></line>
+                            </svg>
+                            Logs Techniques
+                        </h2>
+                    </div>
+                    <div class="log-terminal custom-scrollbar" id="logsContent" style="max-height: 300px; overflow-y: auto;">
+                        <!-- Logs will be inserted here -->
+                    </div>
+                </div>
             </div>
 
-            <!-- Right Column -->
-            <div class="space-y-6">
-
-                <!-- Conversation Card -->
-                <div class="bg-white rounded-lg shadow-card border border-gray-200 animate-fade-in">
-                    <div class="p-6 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+            <!-- RIGHT COLUMN: Conversation & Reservation -->
+            <div>
+                <!-- Conversation -->
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                             </svg>
                             Conversation
                         </h2>
                     </div>
-                    <div id="transcriptContent" class="p-4 max-h-96 overflow-y-auto custom-scrollbar space-y-3">
-                        <div class="message system p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg animate-slide-in">
-                            <div class="label flex items-center gap-2 text-xs font-semibold text-blue-700 uppercase tracking-wide mb-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                Système
+                    <div class="card-body" style="padding: 24px; max-height: 500px; overflow-y: auto;" id="transcriptContent">
+                        <div class="timeline">
+                            <div class="timeline-item system">
+                                <div class="timeline-dot"></div>
+                                <div class="message-card">
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                        <div class="avatar">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; font-size: 13px; color: #64748b;">SYSTÈME</div>
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 14px; color: #475569; font-style: italic;">
+                                        Cliquez sur "Démarrer l'appel test" pour commencer...
+                                    </div>
+                                </div>
                             </div>
-                            <div class="text-sm text-gray-700">Cliquez sur "Démarrer l'appel test" pour commencer...</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Logs Card -->
-                <div class="bg-gray-900 rounded-lg shadow-card border border-gray-800 animate-fade-in">
-                    <div class="p-6 border-b border-gray-800">
-                        <h2 class="text-xl font-semibold text-white flex items-center gap-2">
-                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                <!-- Réservation en cours -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
                             </svg>
-                            Logs techniques
+                            Réservation en cours
                         </h2>
                     </div>
-                    <div id="logsContent" class="p-4 max-h-64 overflow-y-auto custom-scrollbar font-mono text-xs space-y-1">
-                        <!-- Logs will be inserted here -->
+                    <div class="card-body">
+                        <!-- Informations client -->
+                        <div class="section-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span class="section-title">Informations Client</span>
+                        </div>
+                        <div class="res-grid">
+                            <div class="res-field">
+                                <div class="res-field-label">Nom</div>
+                                <div class="res-field-value" id="resNom">-</div>
+                            </div>
+                            <div class="res-field">
+                                <div class="res-field-label">Prénom</div>
+                                <div class="res-field-value" id="resPrenom">-</div>
+                            </div>
+                            <div class="res-field">
+                                <div class="res-field-label">Email</div>
+                                <div class="res-field-value" id="resEmail" style="font-size: 12px; word-break: break-all;">-</div>
+                            </div>
+                            <div class="res-field">
+                                <div class="res-field-label">Téléphone</div>
+                                <div class="res-field-value" id="resTelephone">-</div>
+                            </div>
+                        </div>
+
+                        <!-- Détails du séjour -->
+                        <div class="section-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <span class="section-title">Détails du Séjour</span>
+                        </div>
+                        <div class="res-grid">
+                            <div class="res-field">
+                                <div class="res-field-label">Date d'arrivée</div>
+                                <div class="res-field-value" id="resDateArrivee">-</div>
+                            </div>
+                            <div class="res-field">
+                                <div class="res-field-label">Date de départ</div>
+                                <div class="res-field-value" id="resDateDepart">-</div>
+                            </div>
+                            <div class="res-field">
+                                <div class="res-field-label">Type de chambre</div>
+                                <div class="res-field-value" id="resTypeChambre">-</div>
+                            </div>
+                            <div class="res-field">
+                                <div class="res-field-label">Nombre de personnes</div>
+                                <div class="res-field-value" id="resNbPersonnes">-</div>
+                            </div>
+                        </div>
+
+                        <!-- Demandes spéciales -->
+                        <div class="res-field" style="margin-bottom: 0;">
+                            <div class="res-field-label">Demandes spéciales</div>
+                            <div class="res-field-value" id="resDemandesSpeciales">-</div>
+                        </div>
+
+                        <!-- Statut -->
+                        <div id="resStatus" class="res-status" style="display: none;">
+                            <div style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; animation: pulse 1s infinite;"></div>
+                            <span id="resStatusText" style="font-size: 14px; font-weight: 600; color: #1e40af;">En attente...</span>
+                        </div>
+
+                        <!-- Confirmation -->
+                        <div id="resConfirmation" class="res-confirmation" style="display: none;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            <div>
+                                <div style="font-weight: 700; color: #15803d; margin-bottom: 4px;">Réservation confirmée !</div>
+                                <div style="font-size: 13px; color: #166534;">Numéro : <span id="resId" style="font-weight: 700; font-family: 'Consolas', monospace;">-</span></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
     </div>
 
@@ -319,6 +818,7 @@
         const stopBtn = document.getElementById('stopBtn');
         const statusDiv = document.getElementById('status');
         const statusText = document.getElementById('statusText');
+        const statusIndicator = document.getElementById('statusIndicator');
         const transcriptContent = document.getElementById('transcriptContent');
         const logsContent = document.getElementById('logsContent');
         const volumeBar = document.getElementById('volumeBar');
@@ -341,21 +841,81 @@
 
         // Fonction pour ajouter un message dans la conversation
         function addMessage(text, type = 'system') {
-            const message = document.createElement('div');
-            message.className = `message ${type}`;
+            // Trouver la timeline ou la créer si elle n'existe pas
+            let timeline = transcriptContent.querySelector('.timeline');
+            if (!timeline) {
+                timeline = document.createElement('div');
+                timeline.className = 'timeline';
+                transcriptContent.innerHTML = '';
+                transcriptContent.appendChild(timeline);
+            }
 
-            const label = document.createElement('div');
-            label.className = 'label';
-            label.textContent = type === 'user' ? '👤 Vous' :
-                               type === 'assistant' ? '🤖 Assistant' :
-                               'ℹ️ Système';
+            const timelineItem = document.createElement('div');
+            timelineItem.className = `timeline-item ${type}`;
 
+            const dot = document.createElement('div');
+            dot.className = 'timeline-dot';
+
+            const messageCard = document.createElement('div');
+            messageCard.className = 'message-card';
+
+            // Header with avatar
+            const header = document.createElement('div');
+            header.style.cssText = 'display: flex; align-items: center; gap: 12px; margin-bottom: 12px;';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+
+            let avatarContent, senderName;
+            if (type === 'user') {
+                avatarContent = 'VU';
+                senderName = 'VOUS';
+            } else if (type === 'assistant') {
+                avatarContent = 'VB';
+                senderName = 'VACANCES BLEUES AI';
+            } else {
+                avatar.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>`;
+                senderName = 'SYSTÈME';
+            }
+
+            if (type !== 'system') {
+                avatar.textContent = avatarContent;
+            }
+
+            const senderInfo = document.createElement('div');
+            const senderLabel = document.createElement('div');
+            senderLabel.style.cssText = 'font-weight: 600; font-size: 13px; color: #64748b;';
+            senderLabel.textContent = senderName;
+            senderInfo.appendChild(senderLabel);
+
+            header.appendChild(avatar);
+            header.appendChild(senderInfo);
+
+            // Message content
             const content = document.createElement('div');
+            content.style.cssText = 'font-size: 14px; color: #475569;';
+            if (type === 'system') {
+                content.style.fontStyle = 'italic';
+            }
             content.textContent = text;
 
-            message.appendChild(label);
-            message.appendChild(content);
-            transcriptContent.appendChild(message);
+            // Timestamp
+            const timestamp = document.createElement('div');
+            timestamp.className = 'timestamp';
+            timestamp.textContent = new Date().toLocaleTimeString('fr-FR');
+
+            messageCard.appendChild(header);
+            messageCard.appendChild(content);
+            messageCard.appendChild(timestamp);
+
+            timelineItem.appendChild(dot);
+            timelineItem.appendChild(messageCard);
+
+            timeline.appendChild(timelineItem);
 
             // Auto-scroll
             transcriptContent.scrollTop = transcriptContent.scrollHeight;
@@ -363,7 +923,7 @@
 
         // Fonction pour mettre à jour le statut
         function setStatus(status, text) {
-            statusDiv.className = `status ${status}`;
+            statusIndicator.className = `status-indicator ${status}`;
             statusText.textContent = text;
         }
 
@@ -399,7 +959,7 @@ Processus de réservation:
 5. Collecte les informations personnelles (nom, prénom, téléphone, email)
 6. Demande s'il y a des demandes spéciales
 7. Récapitule la réservation
-8. Confirme la réservation (pour le test, dis juste que la réservation est confirmée)
+8. Confirme la réservation en utilisant la fonction create_reservation
 
 Types de chambres disponibles:
 - Chambre Standard (2 personnes) - À partir de 89€/nuit
@@ -408,7 +968,81 @@ Types de chambres disponibles:
 
 Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas submerger le client.`,
                         modalities: ['text', 'audio'],
-                        turn_detection: { type: 'server_vad' }
+                        turn_detection: { type: 'server_vad' },
+                        tools: [
+                            {
+                                type: "function",
+                                name: "check_availability",
+                                description: "Vérifie la disponibilité des chambres pour des dates données",
+                                parameters: {
+                                    type: "object",
+                                    properties: {
+                                        date_arrivee: {
+                                            type: "string",
+                                            description: "Date d'arrivée au format YYYY-MM-DD"
+                                        },
+                                        date_depart: {
+                                            type: "string",
+                                            description: "Date de départ au format YYYY-MM-DD"
+                                        },
+                                        type_chambre: {
+                                            type: "string",
+                                            enum: ["standard", "familiale", "suite_vue_mer"],
+                                            description: "Type de chambre à vérifier"
+                                        }
+                                    },
+                                    required: ["date_arrivee", "date_depart", "type_chambre"]
+                                }
+                            },
+                            {
+                                type: "function",
+                                name: "create_reservation",
+                                description: "Crée une réservation d'hôtel dans le système Vacances Bleues",
+                                parameters: {
+                                    type: "object",
+                                    properties: {
+                                        nom: {
+                                            type: "string",
+                                            description: "Nom de famille du client"
+                                        },
+                                        prenom: {
+                                            type: "string",
+                                            description: "Prénom du client"
+                                        },
+                                        email: {
+                                            type: "string",
+                                            description: "Adresse email du client"
+                                        },
+                                        telephone: {
+                                            type: "string",
+                                            description: "Numéro de téléphone du client"
+                                        },
+                                        date_arrivee: {
+                                            type: "string",
+                                            description: "Date d'arrivée au format YYYY-MM-DD"
+                                        },
+                                        date_depart: {
+                                            type: "string",
+                                            description: "Date de départ au format YYYY-MM-DD"
+                                        },
+                                        type_chambre: {
+                                            type: "string",
+                                            enum: ["standard", "familiale", "suite_vue_mer"],
+                                            description: "Type de chambre réservée"
+                                        },
+                                        nombre_personnes: {
+                                            type: "number",
+                                            description: "Nombre de personnes pour la réservation"
+                                        },
+                                        demandes_speciales: {
+                                            type: "string",
+                                            description: "Demandes ou besoins spéciaux du client (optionnel)"
+                                        }
+                                    },
+                                    required: ["nom", "prenom", "email", "telephone", "date_arrivee", "date_depart", "type_chambre", "nombre_personnes"]
+                                }
+                            }
+                        ]
                     }),
                 });
 
@@ -441,7 +1075,7 @@ Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas 
                 addLog('Demande accès au microphone...', 'info');
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 addLog('Microphone activé', 'success');
-                micStatus.textContent = 'Actif ✅';
+                micStatus.textContent = 'Actif';
 
                 stream.getTracks().forEach(track => {
                     peerConnection.addTrack(track, stream);
@@ -470,7 +1104,7 @@ Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas 
 
                 dataChannel.addEventListener('open', () => {
                     addLog('Canal de données ouvert', 'success');
-                    setStatus('connected', '✅ Connecté - Parlez maintenant !');
+                    setStatus('connected', 'Connecté - Parlez maintenant !');
                     stopBtn.disabled = false;
 
                     // Envoyer le message d'accueil
@@ -509,7 +1143,7 @@ Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas 
                                     .join('');
                                 if (text) {
                                     addMessage(text, 'assistant');
-                                    addLog(`Assistant: ${text}`, 'success');
+                                    addLog(`Vacances Bleues AI: ${text}`, 'success');
                                 }
                             }
                         }
@@ -517,13 +1151,94 @@ Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas 
                         // Gérer les réponses audio
                         if (msg.type === 'response.audio_transcript.done') {
                             addMessage(msg.transcript, 'assistant');
-                            addLog(`Assistant: ${msg.transcript}`, 'success');
+                            addLog(`Vacances Bleues AI: ${msg.transcript}`, 'success');
                         }
 
                         // Gérer les transcriptions utilisateur
                         if (msg.type === 'conversation.item.input_audio_transcription.completed') {
                             addMessage(msg.transcript, 'user');
                             addLog(`Utilisateur: ${msg.transcript}`, 'info');
+                        }
+
+                        // Gérer les appels de fonction
+                        if (msg.type === 'response.function_call_arguments.done') {
+                            addLog(`Appel de fonction: ${msg.name}`, 'warning');
+                            const args = JSON.parse(msg.arguments);
+
+                            // Afficher dans la conversation
+                            addMessage(`Appel de la fonction ${msg.name}...`, 'system');
+
+                            // Simuler l'exécution de la fonction
+                            let functionResponse;
+
+                            if (msg.name === 'check_availability') {
+                                addLog(`Vérification disponibilité: ${args.type_chambre} du ${args.date_arrivee} au ${args.date_depart}`, 'warning');
+                                functionResponse = {
+                                    available: true,
+                                    message: `Excellente nouvelle ! Nous avons des chambres ${args.type_chambre} disponibles du ${args.date_arrivee} au ${args.date_depart}.`
+                                };
+                                addMessage(`${functionResponse.message}`, 'system');
+
+                            } else if (msg.name === 'create_reservation') {
+                                addLog(`Création réservation pour ${args.prenom} ${args.nom}`, 'warning');
+
+                                // Mettre à jour l'interface avec les données
+                                document.getElementById('resNom').textContent = args.nom || '-';
+                                document.getElementById('resPrenom').textContent = args.prenom || '-';
+                                document.getElementById('resEmail').textContent = args.email || '-';
+                                document.getElementById('resTelephone').textContent = args.telephone || '-';
+                                document.getElementById('resDateArrivee').textContent = args.date_arrivee || '-';
+                                document.getElementById('resDateDepart').textContent = args.date_depart || '-';
+
+                                // Formater le type de chambre
+                                const typesChambre = {
+                                    'standard': 'Chambre Standard',
+                                    'familiale': 'Chambre Familiale',
+                                    'suite_vue_mer': 'Suite Vue Mer'
+                                };
+                                document.getElementById('resTypeChambre').textContent = typesChambre[args.type_chambre] || args.type_chambre;
+                                document.getElementById('resNbPersonnes').textContent = args.nombre_personnes || '-';
+                                document.getElementById('resDemandesSpeciales').textContent = args.demandes_speciales || 'Aucune';
+
+                                // Afficher le statut
+                                document.getElementById('resStatus').style.display = 'flex';
+                                document.getElementById('resStatusText').textContent = 'Création de la réservation...';
+
+                                // Générer un numéro de réservation
+                                const resId = `RES-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
+                                document.getElementById('resId').textContent = resId;
+
+                                // Après 1 seconde, afficher la confirmation
+                                setTimeout(() => {
+                                    document.getElementById('resStatus').style.display = 'none';
+                                    document.getElementById('resConfirmation').style.display = 'flex';
+                                    addLog(`Réservation créée: ${resId}`, 'success');
+                                }, 1000);
+
+                                functionResponse = {
+                                    success: true,
+                                    reservation_id: resId,
+                                    message: `Parfait ! Votre réservation est confirmée sous le numéro ${resId}. Un email de confirmation sera envoyé à ${args.email}.`
+                                };
+
+                                addMessage(`Réservation créée: ${resId}`, 'system');
+                            }
+
+                            // Envoyer la réponse de la fonction à Vacances Bleues AI
+                            if (functionResponse) {
+                                const functionOutput = {
+                                    type: 'conversation.item.create',
+                                    item: {
+                                        type: 'function_call_output',
+                                        call_id: msg.call_id,
+                                        output: JSON.stringify(functionResponse)
+                                    }
+                                };
+                                dataChannel.send(JSON.stringify(functionOutput));
+
+                                // Demander à Vacances Bleues AI de continuer
+                                dataChannel.send(JSON.stringify({ type: 'response.create' }));
+                            }
                         }
 
                     } catch (e) {
@@ -563,7 +1278,7 @@ Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas 
                 });
 
                 addLog('Connexion établie !', 'success');
-                addMessage('Connexion établie ! L\'assistant va vous parler...', 'system');
+                addMessage('Connexion établie ! Vacances Bleues AI va vous parler...', 'system');
 
             } catch (error) {
                 addLog(`Erreur: ${error.message}`, 'error');
@@ -575,7 +1290,7 @@ Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas 
                     addLog('Ou problème CORS avec l\'API OpenAI', 'warning');
                 }
 
-                setStatus('disconnected', '❌ Erreur de connexion');
+                setStatus('disconnected', 'Erreur de connexion');
                 alert(`Erreur: ${error.message}\n\nVérifiez la console (F12) pour plus de détails.`);
                 startBtn.disabled = false;
                 stopBtn.disabled = true;
@@ -606,96 +1321,11 @@ Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas 
             volumeBar.style.width = '0%';
 
             addLog('Connexion fermée', 'info');
-            addMessage('Appel terminé. Merci d\'avoir testé l\'assistant Vacances Bleues !', 'system');
+            addMessage('Appel terminé. Merci d\'avoir testé Vacances Bleues AI !', 'system');
         });
 
         // Log initial
         addLog('Page chargée - Prêt à démarrer', 'success');
     </script>
-
-    <style>
-        /* Message styles */
-        .message {
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .message.user {
-            @apply p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg;
-        }
-
-        .message.user .label {
-            @apply flex items-center gap-2 text-xs font-semibold text-blue-700 uppercase tracking-wide mb-2;
-        }
-
-        .message.user div:last-child {
-            @apply text-sm text-gray-700;
-        }
-
-        .message.assistant {
-            @apply p-4 bg-purple-50 border-l-4 border-purple-500 rounded-lg;
-        }
-
-        .message.assistant .label {
-            @apply flex items-center gap-2 text-xs font-semibold text-purple-700 uppercase tracking-wide mb-2;
-        }
-
-        .message.assistant div:last-child {
-            @apply text-sm text-gray-700;
-        }
-
-        .message.system {
-            @apply p-4 bg-amber-50 border-l-4 border-amber-500 rounded-lg;
-        }
-
-        .message.system .label {
-            @apply flex items-center gap-2 text-xs font-semibold text-amber-700 uppercase tracking-wide mb-2;
-        }
-
-        .message.system div:last-child {
-            @apply text-sm text-gray-700 italic;
-        }
-
-        /* Log entry styles */
-        .log-entry.info {
-            @apply text-blue-400;
-        }
-
-        .log-entry.success {
-            @apply text-green-400;
-        }
-
-        .log-entry.error {
-            @apply text-red-400;
-        }
-
-        .log-entry.warning {
-            @apply text-yellow-400;
-        }
-
-        /* Status styles */
-        .status.connecting #statusIndicator span:first-child {
-            @apply bg-yellow-400;
-        }
-
-        .status.connecting #statusIndicator span:last-child {
-            @apply bg-yellow-500;
-        }
-
-        .status.connected #statusIndicator span:first-child {
-            @apply bg-green-400;
-        }
-
-        .status.connected #statusIndicator span:last-child {
-            @apply bg-green-500;
-        }
-
-        .status.disconnected #statusIndicator span:first-child {
-            @apply bg-red-400;
-        }
-
-        .status.disconnected #statusIndicator span:last-child {
-            @apply bg-red-500;
-        }
-    </style>
 </body>
 </html>
