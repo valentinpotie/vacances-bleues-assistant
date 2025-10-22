@@ -4,327 +4,297 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Vacances Bleues - Assistant Vocal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(214.3 31.8% 91.4%)",
+                        input: "hsl(214.3 31.8% 91.4%)",
+                        ring: "hsl(221.2 83.2% 53.3%)",
+                        background: "hsl(0 0% 100%)",
+                        foreground: "hsl(222.2 84% 4.9%)",
+                        primary: {
+                            DEFAULT: "hsl(221.2 83.2% 53.3%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(222.2 47.4% 11.2%)",
+                        },
+                        destructive: {
+                            DEFAULT: "hsl(0 84.2% 60.2%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(215.4 16.3% 46.9%)",
+                        },
+                        accent: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(222.2 47.4% 11.2%)",
+                        },
+                        card: {
+                            DEFAULT: "hsl(0 0% 100%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                        success: {
+                            DEFAULT: "hsl(142.1 76.2% 36.3%)",
+                            foreground: "hsl(355.7 100% 97.3%)",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "0.5rem",
+                        md: "calc(0.5rem - 2px)",
+                        sm: "calc(0.5rem - 4px)",
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.2s ease-out',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                    },
+                }
+            }
+        }
+    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Custom styles for specific elements */
+        .shadow-card {
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        .shadow-card-hover {
+            transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
         }
 
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            color: #667eea;
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 1.1em;
-        }
-
-        .status {
-            background: #f5f7fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .status-indicator {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 10px;
-            animation: pulse 2s infinite;
-        }
-
-        .status.disconnected .status-indicator {
-            background: #e74c3c;
-            animation: none;
-        }
-
-        .status.connecting .status-indicator {
-            background: #f39c12;
-        }
-
-        .status.connected .status-indicator {
-            background: #2ecc71;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        button {
-            flex: 1;
-            padding: 15px 30px;
-            font-size: 1.1em;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        #startBtn {
-            background: #2ecc71;
-            color: white;
-        }
-
-        #startBtn:hover:not(:disabled) {
-            background: #27ae60;
+        .shadow-card-hover:hover {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
         }
 
-        #stopBtn {
-            background: #e74c3c;
-            color: white;
+        /* Custom scrollbar for transcript and logs */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
         }
 
-        #stopBtn:hover:not(:disabled) {
-            background: #c0392b;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: hsl(210 40% 96.1%);
+            border-radius: 4px;
         }
 
-        .transcript {
-            background: #f5f7fa;
-            border-radius: 10px;
-            padding: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-            margin-bottom: 20px;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: hsl(215.4 16.3% 46.9%);
+            border-radius: 4px;
         }
 
-        .transcript h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.2em;
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: hsl(215.4 16.3% 36.9%);
         }
 
-        .message {
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 8px;
-            animation: slideIn 0.3s ease;
+        /* Gradient animation for volume bar */
+        .volume-gradient {
+            background: linear-gradient(90deg,
+                hsl(142.1 76.2% 36.3%) 0%,
+                hsl(45 93% 47%) 50%,
+                hsl(0 84.2% 60.2%) 100%);
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Logo animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
         }
 
-        .message.user {
-            background: #e8f4f8;
-            border-left: 4px solid #3498db;
-        }
-
-        .message.assistant {
-            background: #f0e8f8;
-            border-left: 4px solid #9b59b6;
-        }
-
-        .message.system {
-            background: #fff9e6;
-            border-left: 4px solid #f39c12;
-            font-style: italic;
-        }
-
-        .message .label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .message.user .label {
-            color: #3498db;
-        }
-
-        .message.assistant .label {
-            color: #9b59b6;
-        }
-
-        .message.system .label {
-            color: #f39c12;
-        }
-
-        .logs {
-            background: #2c3e50;
-            color: #ecf0f1;
-            border-radius: 10px;
-            padding: 15px;
-            max-height: 200px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85em;
-        }
-
-        .logs h3 {
-            color: #3498db;
-            margin-bottom: 10px;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        .log-entry {
-            margin-bottom: 5px;
-            padding: 5px;
-            border-radius: 3px;
-        }
-
-        .log-entry.info {
-            color: #3498db;
-        }
-
-        .log-entry.success {
-            color: #2ecc71;
-        }
-
-        .log-entry.error {
-            color: #e74c3c;
-        }
-
-        .log-entry.warning {
-            color: #f39c12;
-        }
-
-        .config {
-            background: #ecf0f1;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 0.9em;
-        }
-
-        .config h3 {
-            color: #34495e;
-            margin-bottom: 10px;
-        }
-
-        .config p {
-            margin-bottom: 5px;
-            color: #555;
-        }
-
-        .config code {
-            background: #fff;
-            padding: 2px 6px;
-            border-radius: 3px;
-            color: #e74c3c;
-            font-family: 'Courier New', monospace;
-        }
-
-        .volume-meter {
-            width: 100%;
-            height: 10px;
-            background: #ecf0f1;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .volume-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #2ecc71, #f39c12, #e74c3c);
-            width: 0%;
-            transition: width 0.1s ease;
+        .logo-float {
+            animation: float 3s ease-in-out infinite;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🏨 Vacances Bleues</h1>
-            <p>Test de l'assistant vocal de réservation</p>
-        </div>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
 
-        <div class="status disconnected" id="status">
-            <span class="status-indicator"></span>
-            <span id="statusText">Déconnecté</span>
-        </div>
+        <!-- Header -->
+        <header class="text-center mb-8 animate-fade-in">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-4 logo-float shadow-lg">
+                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Vacances Bleues</h1>
+            <p class="text-lg text-gray-600">Test de l'assistant vocal de réservation</p>
+        </header>
 
-        <div class="controls">
-            <button id="startBtn">🎤 Démarrer l'appel test</button>
-            <button id="stopBtn" disabled>🛑 Terminer l'appel</button>
-        </div>
-
-        <div class="volume-meter">
-            <div class="volume-bar" id="volumeBar"></div>
-        </div>
-
-        <div class="transcript">
-            <h3>📝 Conversation</h3>
-            <div id="transcriptContent">
-                <div class="message system">
-                    <div class="label">ℹ️ Système</div>
-                    <div>Cliquez sur "Démarrer l'appel test" pour commencer...</div>
-                </div>
+        <!-- Status Card -->
+        <div class="bg-white rounded-lg shadow-card p-6 mb-6 animate-fade-in border border-gray-200">
+            <div id="status" class="flex items-center justify-center gap-3">
+                <span id="statusIndicator" class="relative flex h-4 w-4">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-4 w-4 bg-red-500"></span>
+                </span>
+                <span id="statusText" class="text-lg font-semibold text-gray-700">Déconnecté</span>
             </div>
         </div>
 
-        <div class="logs">
-            <h3>🔍 Logs techniques</h3>
-            <div id="logsContent"></div>
-        </div>
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        <div class="config">
-            <h3>⚙️ Configuration</h3>
-            <p>🔑 Clé API: <code id="apiKeyStatus">Non configurée</code></p>
-            <p>🌐 Serveur: <code>WebSocket direct OpenAI</code></p>
-            <p>🎤 Micro: <code id="micStatus">En attente</code></p>
-            <p>🔊 Audio: <code id="audioStatus">En attente</code></p>
-            <p style="margin-top: 10px; font-size: 0.85em; color: #e74c3c;">
-                ⚠️ <strong>Important</strong> : Cette page nécessite une connexion internet stable et une clé API OpenAI valide avec accès à l'API Realtime.
-            </p>
+            <!-- Left Column -->
+            <div class="space-y-6">
+
+                <!-- Controls Card -->
+                <div class="bg-white rounded-lg shadow-card p-6 border border-gray-200 animate-fade-in">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                        </svg>
+                        Contrôles
+                    </h2>
+                    <div class="space-y-3">
+                        <button id="startBtn" class="w-full inline-flex items-center justify-center gap-2 rounded-lg text-base font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 h-12 px-6 py-3 shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:-translate-y-0.5 active:translate-y-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                            </svg>
+                            Démarrer l'appel test
+                        </button>
+                        <button id="stopBtn" disabled class="w-full inline-flex items-center justify-center gap-2 rounded-lg text-base font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 h-12 px-6 py-3 shadow-lg shadow-red-500/30 hover:shadow-xl hover:shadow-red-500/40 hover:-translate-y-0.5 active:translate-y-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
+                            </svg>
+                            Terminer l'appel
+                        </button>
+                    </div>
+
+                    <!-- Volume Meter -->
+                    <div class="mt-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-sm font-medium text-gray-700">Niveau du microphone</label>
+                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 0m-2.828-9.9a9 9 0 0112.728 0"></path>
+                            </svg>
+                        </div>
+                        <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+                            <div id="volumeBar" class="h-full volume-gradient transition-all duration-100 ease-out" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration Card -->
+                <div class="bg-white rounded-lg shadow-card p-6 border border-gray-200 animate-fade-in">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Configuration
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                            <svg class="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                            </svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-700 mb-1">Clé API</p>
+                                <code id="apiKeyStatus" class="text-xs text-gray-600 bg-white px-2 py-1 rounded border border-gray-200 break-all">Non configurée</code>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                            <svg class="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-700 mb-1">Serveur</p>
+                                <code class="text-xs text-gray-600 bg-white px-2 py-1 rounded border border-gray-200">WebSocket direct OpenAI</code>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                            <svg class="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-700 mb-1">Micro</p>
+                                <code id="micStatus" class="text-xs text-gray-600 bg-white px-2 py-1 rounded border border-gray-200">En attente</code>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                            <svg class="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 0m-2.828-9.9a9 9 0 0112.728 0"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-700 mb-1">Audio</p>
+                                <code id="audioStatus" class="text-xs text-gray-600 bg-white px-2 py-1 rounded border border-gray-200">En attente</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                        <div class="flex gap-2">
+                            <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <div class="text-xs text-amber-800">
+                                <p class="font-semibold mb-1">Important</p>
+                                <p>Cette page nécessite une connexion internet stable et une clé API OpenAI valide avec accès à l'API Realtime.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-6">
+
+                <!-- Conversation Card -->
+                <div class="bg-white rounded-lg shadow-card border border-gray-200 animate-fade-in">
+                    <div class="p-6 border-b border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                            </svg>
+                            Conversation
+                        </h2>
+                    </div>
+                    <div id="transcriptContent" class="p-4 max-h-96 overflow-y-auto custom-scrollbar space-y-3">
+                        <div class="message system p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg animate-slide-in">
+                            <div class="label flex items-center gap-2 text-xs font-semibold text-blue-700 uppercase tracking-wide mb-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Système
+                            </div>
+                            <div class="text-sm text-gray-700">Cliquez sur "Démarrer l'appel test" pour commencer...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logs Card -->
+                <div class="bg-gray-900 rounded-lg shadow-card border border-gray-800 animate-fade-in">
+                    <div class="p-6 border-b border-gray-800">
+                        <h2 class="text-xl font-semibold text-white flex items-center gap-2">
+                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Logs techniques
+                        </h2>
+                    </div>
+                    <div id="logsContent" class="p-4 max-h-64 overflow-y-auto custom-scrollbar font-mono text-xs space-y-1">
+                        <!-- Logs will be inserted here -->
+                    </div>
+                </div>
+
+            </div>
+
         </div>
     </div>
 
@@ -568,12 +538,14 @@ Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas 
 
                 // Envoyer l'offre à OpenAI
                 addLog('Envoi de l\'offre à OpenAI...', 'info');
-                addLog(`URL SDP: ${data.client_secret.value}`, 'info');
-                const sdpResponse = await fetch(data.client_secret.value, {
+                const sdpUrl = `https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17`;
+                addLog(`URL SDP: ${sdpUrl}`, 'info');
+                const sdpResponse = await fetch(sdpUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/sdp',
-                        'Authorization': `Bearer ${API_KEY}`,
+                        'Authorization': `Bearer ${data.client_secret.value}`,
+                        'OpenAI-Beta': 'realtime=v1',
                     },
                     body: offer.sdp,
                 });
@@ -640,5 +612,90 @@ Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas 
         // Log initial
         addLog('Page chargée - Prêt à démarrer', 'success');
     </script>
+
+    <style>
+        /* Message styles */
+        .message {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message.user {
+            @apply p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg;
+        }
+
+        .message.user .label {
+            @apply flex items-center gap-2 text-xs font-semibold text-blue-700 uppercase tracking-wide mb-2;
+        }
+
+        .message.user div:last-child {
+            @apply text-sm text-gray-700;
+        }
+
+        .message.assistant {
+            @apply p-4 bg-purple-50 border-l-4 border-purple-500 rounded-lg;
+        }
+
+        .message.assistant .label {
+            @apply flex items-center gap-2 text-xs font-semibold text-purple-700 uppercase tracking-wide mb-2;
+        }
+
+        .message.assistant div:last-child {
+            @apply text-sm text-gray-700;
+        }
+
+        .message.system {
+            @apply p-4 bg-amber-50 border-l-4 border-amber-500 rounded-lg;
+        }
+
+        .message.system .label {
+            @apply flex items-center gap-2 text-xs font-semibold text-amber-700 uppercase tracking-wide mb-2;
+        }
+
+        .message.system div:last-child {
+            @apply text-sm text-gray-700 italic;
+        }
+
+        /* Log entry styles */
+        .log-entry.info {
+            @apply text-blue-400;
+        }
+
+        .log-entry.success {
+            @apply text-green-400;
+        }
+
+        .log-entry.error {
+            @apply text-red-400;
+        }
+
+        .log-entry.warning {
+            @apply text-yellow-400;
+        }
+
+        /* Status styles */
+        .status.connecting #statusIndicator span:first-child {
+            @apply bg-yellow-400;
+        }
+
+        .status.connecting #statusIndicator span:last-child {
+            @apply bg-yellow-500;
+        }
+
+        .status.connected #statusIndicator span:first-child {
+            @apply bg-green-400;
+        }
+
+        .status.connected #statusIndicator span:last-child {
+            @apply bg-green-500;
+        }
+
+        .status.disconnected #statusIndicator span:first-child {
+            @apply bg-red-400;
+        }
+
+        .status.disconnected #statusIndicator span:last-child {
+            @apply bg-red-500;
+        }
+    </style>
 </body>
 </html>

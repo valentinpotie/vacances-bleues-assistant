@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Vacances Bleues - Assistant Vocal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(214.3 31.8% 91.4%)",
+                        input: "hsl(214.3 31.8% 91.4%)",
+                        ring: "hsl(222.2 84% 4.9%)",
+                        background: "hsl(0 0% 100%)",
+                        foreground: "hsl(222.2 84% 4.9%)",
+                        primary: {
+                            DEFAULT: "hsl(222.2 47.4% 11.2%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(222.2 47.4% 11.2%)",
+                        },
+                        destructive: {
+                            DEFAULT: "hsl(0 84.2% 60.2%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(215.4 16.3% 46.9%)",
+                        },
+                        accent: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(222.2 47.4% 11.2%)",
+                        },
+                        card: {
+                            DEFAULT: "hsl(0 0% 100%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "0.5rem",
+                        md: "calc(0.5rem - 2px)",
+                        sm: "calc(0.5rem - 4px)",
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .btn-primary {
+            @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2;
+        }
+
+        .btn-destructive {
+            @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 px-4 py-2;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #startBtn {
+            background: #2ecc71;
+            color: white;
+        }
+
+        #startBtn:hover:not(:disabled) {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        }
+
+        #stopBtn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        #stopBtn:hover:not(:disabled) {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .transcript {
+            background: #f5f7fa;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .transcript h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+        }
+
+        .message.assistant {
+            background: #f0e8f8;
+            border-left: 4px solid #9b59b6;
+        }
+
+        .message.system {
+            background: #fff9e6;
+            border-left: 4px solid #f39c12;
+            font-style: italic;
+        }
+
+        .message .label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .message.user .label {
+            color: #3498db;
+        }
+
+        .message.assistant .label {
+            color: #9b59b6;
+        }
+
+        .message.system .label {
+            color: #f39c12;
+        }
+
+        .logs {
+            background: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+
+        .logs h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .log-entry.info {
+            color: #3498db;
+        }
+
+        .log-entry.success {
+            color: #2ecc71;
+        }
+
+        .log-entry.error {
+            color: #e74c3c;
+        }
+
+        .log-entry.warning {
+            color: #f39c12;
+        }
+
+        .config {
+            background: #ecf0f1;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .config h3 {
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+
+        .config p {
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .config code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #e74c3c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .volume-meter {
+            width: 100%;
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .volume-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #f39c12, #e74c3c);
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏨 Vacances Bleues</h1>
+            <p>Test de l'assistant vocal de réservation</p>
+        </div>
+
+        <div class="status disconnected" id="status">
+            <span class="status-indicator"></span>
+            <span id="statusText">Déconnecté</span>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn">🎤 Démarrer l'appel test</button>
+            <button id="stopBtn" disabled>🛑 Terminer l'appel</button>
+        </div>
+
+        <div class="volume-meter">
+            <div class="volume-bar" id="volumeBar"></div>
+        </div>
+
+        <div class="transcript">
+            <h3>📝 Conversation</h3>
+            <div id="transcriptContent">
+                <div class="message system">
+                    <div class="label">ℹ️ Système</div>
+                    <div>Cliquez sur "Démarrer l'appel test" pour commencer...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="logs">
+            <h3>🔍 Logs techniques</h3>
+            <div id="logsContent"></div>
+        </div>
+
+        <div class="config">
+            <h3>⚙️ Configuration</h3>
+            <p>🔑 Clé API: <code id="apiKeyStatus">Non configurée</code></p>
+            <p>🌐 Serveur: <code>WebSocket direct OpenAI</code></p>
+            <p>🎤 Micro: <code id="micStatus">En attente</code></p>
+            <p>🔊 Audio: <code id="audioStatus">En attente</code></p>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #e74c3c;">
+                ⚠️ <strong>Important</strong> : Cette page nécessite une connexion internet stable et une clé API OpenAI valide avec accès à l'API Realtime.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_KEY = localStorage.getItem('openai_api_key') || prompt('Entrez votre clé API OpenAI (sk-proj-...):');
+
+        if (API_KEY && API_KEY.startsWith('sk-')) {
+            localStorage.setItem('openai_api_key', API_KEY);
+            document.getElementById('apiKeyStatus').textContent = API_KEY.substring(0, 20) + '...';
+        } else {
+            alert('Clé API invalide. Rechargez la page et entrez une clé valide.');
+        }
+
+        // Variables globales
+        let peerConnection = null;
+        let dataChannel = null;
+        let audioElement = null;
+
+        // Éléments DOM
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const statusDiv = document.getElementById('status');
+        const statusText = document.getElementById('statusText');
+        const transcriptContent = document.getElementById('transcriptContent');
+        const logsContent = document.getElementById('logsContent');
+        const volumeBar = document.getElementById('volumeBar');
+        const micStatus = document.getElementById('micStatus');
+        const audioStatus = document.getElementById('audioStatus');
+
+        // Fonction pour ajouter un log
+        function addLog(message, type = 'info') {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logsContent.insertBefore(logEntry, logsContent.firstChild);
+
+            // Garder seulement les 50 derniers logs
+            while (logsContent.children.length > 50) {
+                logsContent.removeChild(logsContent.lastChild);
+            }
+        }
+
+        // Fonction pour ajouter un message dans la conversation
+        function addMessage(text, type = 'system') {
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+
+            const label = document.createElement('div');
+            label.className = 'label';
+            label.textContent = type === 'user' ? '👤 Vous' :
+                               type === 'assistant' ? '🤖 Assistant' :
+                               'ℹ️ Système';
+
+            const content = document.createElement('div');
+            content.textContent = text;
+
+            message.appendChild(label);
+            message.appendChild(content);
+            transcriptContent.appendChild(message);
+
+            // Auto-scroll
+            transcriptContent.scrollTop = transcriptContent.scrollHeight;
+        }
+
+        // Fonction pour mettre à jour le statut
+        function setStatus(status, text) {
+            statusDiv.className = `status ${status}`;
+            statusText.textContent = text;
+        }
+
+        // Démarrer l'appel
+        startBtn.addEventListener('click', async () => {
+            try {
+                addLog('Démarrage de la session...', 'info');
+                setStatus('connecting', 'Connexion en cours...');
+                startBtn.disabled = true;
+
+                // Créer une session éphémère
+                addLog('Création de la session éphémère...', 'info');
+                const tokenResponse = await fetch('https://api.openai.com/v1/realtime/sessions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-4o-realtime-preview-2024-12-17',
+                        voice: 'alloy',
+                        instructions: `Tu es un assistant de réservation pour la chaîne d'hôtels Vacances Bleues.
+
+Ton rôle est d'aider les clients à réserver des chambres d'hôtel de manière chaleureuse et professionnelle.
+
+IMPORTANT: Tu dois TOUJOURS parler en français.
+
+Processus de réservation:
+1. Accueille chaleureusement le client
+2. Demande les dates d'arrivée et de départ souhaitées
+3. Demande le nombre de personnes
+4. Propose les types de chambres disponibles selon les besoins
+5. Collecte les informations personnelles (nom, prénom, téléphone, email)
+6. Demande s'il y a des demandes spéciales
+7. Récapitule la réservation
+8. Confirme la réservation (pour le test, dis juste que la réservation est confirmée)
+
+Types de chambres disponibles:
+- Chambre Standard (2 personnes) - À partir de 89€/nuit
+- Chambre Familiale (4 personnes) - À partir de 139€/nuit
+- Suite Vue Mer (2 personnes) - À partir de 179€/nuit
+
+Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas submerger le client.`,
+                        modalities: ['text', 'audio'],
+                        turn_detection: { type: 'server_vad' }
+                    }),
+                });
+
+                if (!tokenResponse.ok) {
+                    const error = await tokenResponse.text();
+                    throw new Error(`Erreur session: ${error}`);
+                }
+
+                const data = await tokenResponse.json();
+                addLog('Session créée avec succès', 'success');
+                addLog(`Session ID: ${data.id}`, 'info');
+                console.log('Réponse complète de l\'API:', data);
+
+                // Créer PeerConnection
+                addLog('Configuration WebRTC...', 'info');
+                peerConnection = new RTCPeerConnection();
+
+                // Créer élément audio
+                audioElement = document.createElement('audio');
+                audioElement.autoplay = true;
+                audioStatus.textContent = 'Prêt';
+
+                // Gérer les pistes audio
+                peerConnection.ontrack = (event) => {
+                    addLog('Flux audio reçu', 'success');
+                    audioElement.srcObject = event.streams[0];
+                };
+
+                // Ajouter le micro
+                addLog('Demande accès au microphone...', 'info');
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                addLog('Microphone activé', 'success');
+                micStatus.textContent = 'Actif ✅';
+
+                stream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, stream);
+                });
+
+                // Visualisation du volume
+                const audioContext = new AudioContext();
+                const source = audioContext.createMediaStreamSource(stream);
+                const analyser = audioContext.createAnalyser();
+                source.connect(analyser);
+                analyser.fftSize = 256;
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                function updateVolume() {
+                    if (peerConnection && peerConnection.connectionState === 'connected') {
+                        analyser.getByteFrequencyData(dataArray);
+                        const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                        volumeBar.style.width = `${Math.min(100, average)}%`;
+                        requestAnimationFrame(updateVolume);
+                    }
+                }
+                updateVolume();
+
+                // Data channel pour les événements
+                dataChannel = peerConnection.createDataChannel('oai-events');
+
+                dataChannel.addEventListener('open', () => {
+                    addLog('Canal de données ouvert', 'success');
+                    setStatus('connected', '✅ Connecté - Parlez maintenant !');
+                    stopBtn.disabled = false;
+
+                    // Envoyer le message d'accueil
+                    const greeting = {
+                        type: 'response.create',
+                        response: {
+                            instructions: 'Dis: Bonjour et bienvenue chez Vacances Bleues ! Je suis votre assistant de réservation. Comment puis-je vous aider aujourd\'hui ?'
+                        }
+                    };
+                    dataChannel.send(JSON.stringify(greeting));
+                    addLog('Message d\'accueil envoyé', 'info');
+                });
+
+                dataChannel.addEventListener('message', (event) => {
+                    try {
+                        const msg = JSON.parse(event.data);
+
+                        // Log tous les événements
+                        addLog(`Event: ${msg.type}`, 'info');
+
+                        // Gérer les transcriptions
+                        if (msg.type === 'conversation.item.created') {
+                            if (msg.item?.role === 'user' && msg.item?.content) {
+                                const text = msg.item.content
+                                    .filter(c => c.type === 'input_text')
+                                    .map(c => c.text)
+                                    .join('');
+                                if (text) {
+                                    addMessage(text, 'user');
+                                    addLog(`Utilisateur: ${text}`, 'info');
+                                }
+                            } else if (msg.item?.role === 'assistant' && msg.item?.content) {
+                                const text = msg.item.content
+                                    .filter(c => c.type === 'text')
+                                    .map(c => c.text)
+                                    .join('');
+                                if (text) {
+                                    addMessage(text, 'assistant');
+                                    addLog(`Assistant: ${text}`, 'success');
+                                }
+                            }
+                        }
+
+                        // Gérer les réponses audio
+                        if (msg.type === 'response.audio_transcript.done') {
+                            addMessage(msg.transcript, 'assistant');
+                            addLog(`Assistant: ${msg.transcript}`, 'success');
+                        }
+
+                        // Gérer les transcriptions utilisateur
+                        if (msg.type === 'conversation.item.input_audio_transcription.completed') {
+                            addMessage(msg.transcript, 'user');
+                            addLog(`Utilisateur: ${msg.transcript}`, 'info');
+                        }
+
+                    } catch (e) {
+                        addLog(`Erreur parsing: ${e.message}`, 'error');
+                    }
+                });
+
+                // Créer et envoyer l'offre
+                addLog('Création de l\'offre SDP...', 'info');
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+
+                // Envoyer l'offre à OpenAI
+                addLog('Envoi de l\'offre à OpenAI...', 'info');
+                const sdpUrl = `https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17`;
+                addLog(`URL SDP: ${sdpUrl}`, 'info');
+                const sdpResponse = await fetch(sdpUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/sdp',
+                        'Authorization': `Bearer ${data.client_secret.value}`,
+                        'OpenAI-Beta': 'realtime=v1',
+                    },
+                    body: offer.sdp,
+                });
+
+                if (!sdpResponse.ok) {
+                    throw new Error(`Erreur SDP: ${sdpResponse.statusText}`);
+                }
+
+                const answerSdp = await sdpResponse.text();
+                addLog('Réponse SDP reçue', 'success');
+
+                await peerConnection.setRemoteDescription({
+                    type: 'answer',
+                    sdp: answerSdp,
+                });
+
+                addLog('Connexion établie !', 'success');
+                addMessage('Connexion établie ! L\'assistant va vous parler...', 'system');
+
+            } catch (error) {
+                addLog(`Erreur: ${error.message}`, 'error');
+                console.error('Erreur complète:', error);
+
+                // Si c'est une erreur de fetch, montrer plus de détails
+                if (error instanceof TypeError && error.message.includes('Load failed')) {
+                    addLog('Erreur de chargement - Vérifiez votre connexion internet', 'error');
+                    addLog('Ou problème CORS avec l\'API OpenAI', 'warning');
+                }
+
+                setStatus('disconnected', '❌ Erreur de connexion');
+                alert(`Erreur: ${error.message}\n\nVérifiez la console (F12) pour plus de détails.`);
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+        });
+
+        // Arrêter l'appel
+        stopBtn.addEventListener('click', () => {
+            addLog('Fermeture de la connexion...', 'info');
+
+            if (dataChannel) {
+                dataChannel.close();
+            }
+
+            if (peerConnection) {
+                peerConnection.close();
+            }
+
+            if (audioElement) {
+                audioElement.srcObject = null;
+            }
+
+            setStatus('disconnected', 'Déconnecté');
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            micStatus.textContent = 'Inactif';
+            audioStatus.textContent = 'Inactif';
+            volumeBar.style.width = '0%';
+
+            addLog('Connexion fermée', 'info');
+            addMessage('Appel terminé. Merci d\'avoir testé l\'assistant Vacances Bleues !', 'system');
+        });
+
+        // Log initial
+        addLog('Page chargée - Prêt à démarrer', 'success');
+    </script>
+</body>
+</html>
