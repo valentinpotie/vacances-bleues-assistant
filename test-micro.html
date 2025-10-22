@@ -322,6 +322,9 @@
             <p>🌐 Serveur: <code>WebSocket direct OpenAI</code></p>
             <p>🎤 Micro: <code id="micStatus">En attente</code></p>
             <p>🔊 Audio: <code id="audioStatus">En attente</code></p>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #e74c3c;">
+                ⚠️ <strong>Important</strong> : Cette page nécessite une connexion internet stable et une clé API OpenAI valide avec accès à l'API Realtime.
+            </p>
         </div>
     </div>
 
@@ -446,6 +449,8 @@ Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas 
 
                 const data = await tokenResponse.json();
                 addLog('Session créée avec succès', 'success');
+                addLog(`Session ID: ${data.id}`, 'info');
+                console.log('Réponse complète de l\'API:', data);
 
                 // Créer PeerConnection
                 addLog('Configuration WebRTC...', 'info');
@@ -563,10 +568,12 @@ Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas 
 
                 // Envoyer l'offre à OpenAI
                 addLog('Envoi de l\'offre à OpenAI...', 'info');
+                addLog(`URL SDP: ${data.client_secret.value}`, 'info');
                 const sdpResponse = await fetch(data.client_secret.value, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/sdp',
+                        'Authorization': `Bearer ${API_KEY}`,
                     },
                     body: offer.sdp,
                 });
@@ -588,11 +595,18 @@ Sois naturel, sympathique et efficace. Pose une question à la fois pour ne pas 
 
             } catch (error) {
                 addLog(`Erreur: ${error.message}`, 'error');
+                console.error('Erreur complète:', error);
+
+                // Si c'est une erreur de fetch, montrer plus de détails
+                if (error instanceof TypeError && error.message.includes('Load failed')) {
+                    addLog('Erreur de chargement - Vérifiez votre connexion internet', 'error');
+                    addLog('Ou problème CORS avec l\'API OpenAI', 'warning');
+                }
+
                 setStatus('disconnected', '❌ Erreur de connexion');
-                alert(`Erreur: ${error.message}`);
+                alert(`Erreur: ${error.message}\n\nVérifiez la console (F12) pour plus de détails.`);
                 startBtn.disabled = false;
                 stopBtn.disabled = true;
-                console.error('Erreur détaillée:', error);
             }
         });
 
